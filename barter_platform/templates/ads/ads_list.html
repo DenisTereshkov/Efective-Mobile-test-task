@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block title %}Список объявлений{% endblock %}
+
+{% block content %}
+<div class="card col-md-10 mx-auto mt-4">
+  <div class="card-header">
+    <h1 class="mb-0">Все объявления</h1>
+  </div>
+  <div class="card-body">
+    <div class="mb-4">
+      <a href="{% url 'create' %}" class="btn btn-success">
+        <i class="bi bi-plus-lg"></i> Создать новое
+      </a>
+    </div>
+
+    <ul class="list-group">
+      {% for ad in ads %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <a href="{% url 'ad-detail' ad.pk %}" class="h5 text-decoration-none">
+            {{ ad.title }}
+          </a>
+          <div class="text-muted small mt-1">
+            Автор: {{ ad.user.username }} | {{ ad.created_at|date:"d.m.Y H:i" }}
+          </div>
+        </div>
+        {% if ad.image_url %}
+        <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="img-thumbnail" width="80">
+        {% endif %}
+      </li>
+      {% empty %}
+      <li class="list-group-item text-muted">Объявлений пока нет</li>
+      {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+    <nav class="mt-4">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+        </li>
+        {% endif %}
+        
+        <li class="page-item active">
+          <span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -3,6 +3,6 @@ from . import views
 
 urlpatterns = [
     path('', views.ads_list, name='ads_list'),
-    path('new/', views.create_ad, name='create_ad'),
+    path('new/', views.create_ad, name='create'),
     path('<int:pk>/edit/', views.edit_ad, name='edit_ad'),
 ]

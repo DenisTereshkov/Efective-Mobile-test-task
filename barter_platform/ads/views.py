@@ -27,4 +27,4 @@ def edit_ad(request, pk):
 
 def ads_list(request):
     ads = Ad.objects.all().order_by('-created_at')
-    return render(request, 'ads_list.html', {'ads': ads})
+    return render(request, 'ads/ads_list.html', {'ads': ads})

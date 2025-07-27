@@ -1,3 +1,57 @@
-<footer class="border-top text-center py-3">
-  <p> Barter Platform test task header </p>    
-</footer>
+{% load static %}
+<header>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'ads_list' %}">
+        <img src="{% static 'img/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+        Обменник
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
+               href="{% url 'pages:about' %}">
+              О проекте
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'rules' %}active{% endif %}" 
+               href="{% url 'pages:rules' %}">
+              Правила
+            </a>
+          </li>
+        </ul>
+        
+        <div class="d-flex">
+          {% if user.is_authenticated %}
+            <div class="btn-group ms-2">
+              <a href="{% url 'ad-create' %}" class="btn btn-outline-success">
+                <i class="bi bi-plus-lg"></i> Добавить объявление
+              </a>
+              <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+                <i class="bi bi-person"></i> {{ user.username }}
+              </a>
+              <a href="{% url 'logout' %}" class="btn btn-outline-danger">
+                <i class="bi bi-box-arrow-right"></i> Выйти
+              </a>
+            </div>
+          {% else %}
+            <div class="btn-group ms-2">
+              <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                <i class="bi bi-box-arrow-in-right"></i> Войти
+              </a>
+              <a href="{% url 'registration' %}" class="btn btn-primary">
+                <i class="bi bi-person-plus"></i> Регистрация
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
