@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Входящие предложения обмена</h2>
+  
+  {% if proposals %}
+    <div class="list-group">
+      {% for proposal in proposals %}
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">
+              <a href="{% url 'detail' pk=proposal.ad_sender.id %}">
+                {{ proposal.ad_sender.title }}
+              </a>
+            </h5>
+            <small class="text-muted">{{ proposal.created_at|date:"d.m.Y H:i" }}</small>
+          </div>
+          
+          <p class="mb-1">
+            <strong>Предложено для:</strong> 
+            <a href="{% url 'detail' pk=proposal.ad_receiver.id %}">
+              {{ proposal.ad_receiver.title }}
+            </a>
+          </p>
+          
+          {% if proposal.comment %}
+            <p class="mb-1"><strong>Комментарий:</strong> {{ proposal.comment }}</p>
+          {% endif %}
+          
+          <div class="mt-2">
+            <span class="badge bg-{% if proposal.status == 'pending' %}warning{% elif proposal.status == 'accepted' %}success{% else %}danger{% endif %}">
+              {{ proposal.get_status_display }}
+            </span>
+            
+            {% if proposal.status == 'pending' %}
+              <div class="btn-group btn-group-sm mt-2">
+                <a href="{% url 'accept_exchange' proposal.id %}" class="btn btn-success">Принять</a>
+                <a href="{% url 'reject_exchange' proposal.id %}" class="btn btn-danger">Отклонить</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      У вас пока нет входящих предложений обмена.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

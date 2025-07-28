@@ -4,7 +4,7 @@
     <div class="container">
       <a class="navbar-brand" href="{% url 'ads_list' %}">
         <img src="{% static 'img/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
-        Обменник
+        Barter
       </a>
       
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -13,6 +13,18 @@
       
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'ads_list' %}active{% endif %}" 
+               href="{% url 'ads_list' %}">
+              Все объявления
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'exchange_to_me' %}active{% endif %}" 
+               href="{% url 'exchange_to_me' %}">
+              Предложения
+            </a>
+          </li>
           <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
                href="{% url 'pages:about' %}">

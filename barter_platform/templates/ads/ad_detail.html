@@ -45,6 +45,14 @@
         </a>
       </div>
       {% endif %}
+      {% if user.is_authenticated and user != ad.user %}
+        <a 
+          href="{% url 'create_exchange'  pk=ad.id %}" 
+          class="btn btn-sm btn-outline-primary"
+        >
+          Предложить обмен
+        </a>
+      {% endif %}
     </div>
   </div>
 </div>

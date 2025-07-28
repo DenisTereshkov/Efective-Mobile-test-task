@@ -2,26 +2,36 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
+from .constants import (
+    CATEGORY_CHOICES,
+    CONDITION_CHOICES,
+    STATUS_CHOICES
+)
+
 User = get_user_model()
 
-STATUS_CHOICES = [
-        ('pending', 'Ожидает'),
-        ('accepted', 'Принята'),
-        ('rejected', 'Отклонена'),
-    ]
 
-
-class Ad(models.Model):
+class Ad(models.Model): 
     user = models.ForeignKey(
         User,
+        related_name='ads',
         on_delete=models.CASCADE,
         verbose_name='Автор публикации'
     )
     title = models.CharField('Заголовок', max_length=100)
     description = models.TextField('Описание')
     image_url = models.URLField('Ссылка на изображение', blank=True, null=True)
-    category = models.CharField('Категория', max_length=50)
-    condition = models.CharField('Состояние', max_length=20)
+    category = models.CharField(
+        max_length=50,
+        choices=CATEGORY_CHOICES,
+        default='другое'
+    )
+
+    condition = models.CharField(
+        max_length=20,
+        choices=CONDITION_CHOICES,
+        default='б/у'
+    )
     created_at = models.DateTimeField(
         'Добавлено',
         auto_now_add=True,

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Предложить обмен для: {{ receiver_ad.title }}</h2>
+  
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="receiver_ad_id" value="{{ receiver_ad.id }}">
+    
+    <div class="mb-3">
+      <label class="form-label">Ваше объявление для обмена:</label>
+      <select name="sender_ad_id" class="form-select" required>
+        {% for ad in user_ads %}
+          <option value="{{ ad.id }}">{{ ad.title }} ({{ ad.get_category_display }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Комментарий (необязательно):</label>
+      <textarea name="comment" class="form-control" rows="3"></textarea>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Отправить предложение</button>
+    <a href="{% url 'detail' receiver_ad.id %}" class="btn btn-secondary">Отмена</a>
+  </form>
+</div>
+{% endblock %}

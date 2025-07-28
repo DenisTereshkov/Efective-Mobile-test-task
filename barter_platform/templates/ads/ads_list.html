@@ -8,6 +8,50 @@
   <div class="card-header">
     <h1 class="mb-0">Все объявления</h1>
   </div>
+    <!-- Форма поиска и фильтров -->
+  <div class="card-body">
+    <form method="get" class="mb-4">
+      <div class="row g-3">
+        <!-- Поиск -->
+        <div class="col-md-6">
+          <input type="text" name="search" class="form-control" 
+                 placeholder="Поиск по названию и описанию" 
+                 value="{{ request.GET.search }}">
+        </div>
+        
+        <!-- Фильтр по категории -->
+        <div class="col-md-3">
+          <select name="category" class="form-select">
+            <option value="">Все категории</option>
+            {% for value, label in categories %}
+              <option value="{{ value }}" 
+                {% if request.GET.category == value %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <!-- Фильтр по состоянию -->
+        <div class="col-md-2">
+          <select name="condition" class="form-select">
+            <option value="">Любое состояние</option>
+            {% for value, label in conditions %}
+              <option value="{{ value }}"
+                {% if request.GET.condition == value %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <!-- Кнопки -->
+        <div class="col-md-1">
+          <button type="submit" class="btn btn-primary w-100">Применить</button>
+        </div>
+      </div>
+    </form>
+
   <div class="card-body">
     <div class="mb-4">
       <a href="{% url 'create' %}" class="btn btn-success">
@@ -16,7 +60,7 @@
     </div>
 
     <ul class="list-group">
-      {% for ad in ads %}
+      {% for ad in page_obj %}
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
           <a href="{% url 'detail' ad.pk %}" class="h5 text-decoration-none">
@@ -26,31 +70,48 @@
             Автор: {{ ad.user.username }} | {{ ad.created_at|date:"d.m.Y H:i" }}
           </div>
         </div>
+        {% if user.is_authenticated and user != ad.user %}
+          <a 
+            href="{% url 'create_exchange'  pk=ad.id %}" 
+            class="btn btn-sm btn-outline-primary"
+          >
+            Предложить обмен
+          </a>
+        {% endif %}
         {% if ad.image_url %}
-        <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="img-thumbnail" width="80">
+          <img src="{{ ad.image_url }}" alt="{{ ad.title }}" class="img-thumbnail" width="80">
         {% endif %}
       </li>
       {% empty %}
-      <li class="list-group-item text-muted">Объявлений пока нет</li>
+      <li class="list-group-item text-muted">Объявлений не найдено</li>
       {% endfor %}
     </ul>
 
+    <!-- Пагинация с сохранением параметров -->
     {% if is_paginated %}
     <nav class="mt-4">
       <ul class="pagination">
         {% if page_obj.has_previous %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+          <a class="page-link" 
+             href="?page={{ page_obj.previous_page_number }}{% if get_params %}&{{ get_params }}{% endif %}">
+            Назад
+          </a>
         </li>
         {% endif %}
         
         <li class="page-item active">
-          <span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+          <span class="page-link">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+          </span>
         </li>
         
         {% if page_obj.has_next %}
         <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+          <a class="page-link" 
+             href="?page={{ page_obj.next_page_number }}{% if get_params %}&{{ get_params }}{% endif %}">
+            Вперед
+          </a>
         </li>
         {% endif %}
       </ul>

@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ ad.title }}</h5>
                         <p class="card-text">{{ ad.description|truncatechars:100 }}</p>
-                        <a href="{% url 'edit_ad' ad.pk %}" class="btn btn-sm btn-primary">Редактировать</a>
+                        <a href="{% url 'edit' ad.pk %}" class="btn btn-sm btn-primary">Редактировать</a>
                     </div>
                 </div>
             </div>
