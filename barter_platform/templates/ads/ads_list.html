@@ -19,7 +19,7 @@
       {% for ad in ads %}
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
-          <a href="{% url 'ad-detail' ad.pk %}" class="h5 text-decoration-none">
+          <a href="{% url 'detail' ad.pk %}" class="h5 text-decoration-none">
             {{ ad.title }}
           </a>
           <div class="text-muted small mt-1">

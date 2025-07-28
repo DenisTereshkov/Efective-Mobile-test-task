@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% block content %}
+<div class="container">
+    <h2>Мои объявления</h2>
+    
+    {% if ads %}
+        <div class="row">
+            {% for ad in ads %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    {% if ad.image_url %}
+                    <img src="{{ ad.image_url }}" class="card-img-top" alt="{{ ad.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ ad.title }}</h5>
+                        <p class="card-text">{{ ad.description|truncatechars:100 }}</p>
+                        <a href="{% url 'edit_ad' ad.pk %}" class="btn btn-sm btn-primary">Редактировать</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">У вас пока нет объявлений</div>
+        <a href="{% url 'create' %}" class="btn btn-primary">Создать первое объявление</a>
+    {% endif %}
+</div>
+{% endblock %}
