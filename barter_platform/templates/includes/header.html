@@ -20,12 +20,6 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'exchange_to_me' %}active{% endif %}" 
-               href="{% url 'exchange_to_me' %}">
-              Предложения
-            </a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
                href="{% url 'pages:about' %}">
               О проекте

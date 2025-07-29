@@ -17,6 +17,7 @@
       <p class="text-muted small">
         <i class="bi bi-calendar"></i> Опубликовано: {{ ad.created_at|date:"d.m.Y H:i" }}
       </p>
+      <span class="badge bg-secondary">{{ ad.get_condition_display }}</span>
     </div>
 
     {% if ad.image_url %}

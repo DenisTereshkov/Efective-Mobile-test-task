@@ -23,6 +23,7 @@
               {{ proposal.ad_receiver.title }}
             </a>
           </p>
+          <span class="badge bg-secondary">{{ proposal.ad_receiver.get_condition_display }}</span>
           
           {% if proposal.comment %}
             <p class="mb-1"><strong>Комментарий:</strong> {{ proposal.comment }}</p>

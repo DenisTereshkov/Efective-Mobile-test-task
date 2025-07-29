@@ -33,7 +33,7 @@
         </div>
         
         <!-- Фильтр по состоянию -->
-        <div class="col-md-2">
+        <div class="col-md-3">
           <select name="condition" class="form-select">
             <option value="">Любое состояние</option>
             {% for value, label in conditions %}
@@ -45,8 +45,7 @@
           </select>
         </div>
         
-        <!-- Кнопки -->
-        <div class="col-md-1">
+        <div class="col-md-2">
           <button type="submit" class="btn btn-primary w-100">Применить</button>
         </div>
       </div>
@@ -66,6 +65,7 @@
           <a href="{% url 'detail' ad.pk %}" class="h5 text-decoration-none">
             {{ ad.title }}
           </a>
+          <span class="badge bg-secondary">{{ ad.get_condition_display }}</span>
           <div class="text-muted small mt-1">
             Автор: {{ ad.user.username }} | {{ ad.created_at|date:"d.m.Y H:i" }}
           </div>
@@ -86,8 +86,6 @@
       <li class="list-group-item text-muted">Объявлений не найдено</li>
       {% endfor %}
     </ul>
-
-    <!-- Пагинация с сохранением параметров -->
     {% if is_paginated %}
     <nav class="mt-4">
       <ul class="pagination">

@@ -73,7 +73,7 @@ def ads_list(request):
 
 
 @login_required
-def create_exchange(request, pk):  # Используем pk как в других views
+def create_exchange(request, pk):
     receiver_ad = get_object_or_404(Ad, id=pk)
     if request.user == receiver_ad.user:
         messages.error(request, "Вы не можете предлагать обмен на своё же объявление!")
@@ -126,22 +126,57 @@ def delete_ad(request, pk):
 @login_required
 def user_profile(request):
     user_ads = Ad.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'ads/profile.html', {'ads': user_ads})
+    received_proposals = ExchangeProposal.objects.filter(
+        ad_receiver__user=request.user
+    ).filter(status='pending').select_related('ad_sender', 'ad_sender__user')
+    
+    sent_proposals = ExchangeProposal.objects.filter(
+        ad_sender__user=request.user
+    ).filter(status='pending').select_related('ad_receiver', 'ad_receiver__user')
+    
+    completed_proposals = ExchangeProposal.objects.filter(
+        Q(ad_sender__user=request.user) | Q(ad_receiver__user=request.user),
+        Q(status='rejected') | Q(status='accepted')
+    ).select_related('ad_sender', 'ad_receiver')
+    context = {
+        'ads': user_ads,
+        'received_proposals': received_proposals,
+        'sent_proposals': sent_proposals,
+        'completed_proposals': completed_proposals,
+    }
+    
+    return render(request, 'ads/profile.html', context)
 
+@login_required
 def incoming_exchanges(request):
     proposals = ExchangeProposal.objects.filter(
         ad_receiver__user=request.user
     )
     return render(request, 'ads/exchange_to_me.html', {'proposals': proposals})
 
+@login_required
 def accept_exchange(request, exchange_id):
     proposal = get_object_or_404(ExchangeProposal, id=exchange_id)
     proposal.status = 'accepted'
     proposal.save()
     return redirect('exchange_to_me')
 
+
+@login_required
 def reject_exchange(request, exchange_id):
     proposal = get_object_or_404(ExchangeProposal, id=exchange_id)
     proposal.status = 'rejected'
     proposal.save()
+    return redirect('exchange_to_me')
+
+@login_required
+def cancel_exchange(request, exchange_id):
+    proposal = get_object_or_404(
+        ExchangeProposal,
+        id=exchange_id,
+        ad_sender__user=request.user,
+        status='pending'
+    )
+    proposal.delete()
+    messages.success(request, "Предложение отменено")
     return redirect('exchange_to_me')

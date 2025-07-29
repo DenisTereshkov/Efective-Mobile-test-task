@@ -1,29 +1,171 @@
 {% extends 'base.html' %}
 {% load bootstrap5 %}
 {% block content %}
-<div class="container">
-    <h2>Мои объявления</h2>
+  <div class="container">
+    <h2 class="mb-4">Мои объявления</h2>
     
     {% if ads %}
-        <div class="row">
-            {% for ad in ads %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    {% if ad.image_url %}
-                    <img src="{{ ad.image_url }}" class="card-img-top" alt="{{ ad.title }}">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ ad.title }}</h5>
-                        <p class="card-text">{{ ad.description|truncatechars:100 }}</p>
-                        <a href="{% url 'edit' ad.pk %}" class="btn btn-sm btn-primary">Редактировать</a>
-                    </div>
+      <div class="row">
+        {% for ad in ads %}
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              {% if ad.image_url %}
+                <img src="{{ ad.image_url }}" class="card-img-top" alt="{{ ad.title }}" style="height: 200px; object-fit: cover;">
+              {% endif %}
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ ad.title }}</h5>
+                <p class="card-text">{{ ad.description|truncatechars:100 }}</p>
+                <div class="mt-auto">
+                  <div class="d-flex justify-content-between">
+                    <a href="{% url 'edit' ad.pk %}" class="btn btn-sm btn-primary">Редактировать</a>
+                    <span class="badge bg-secondary">{{ ad.get_condition_display }}</span>
+                  </div>
                 </div>
+              </div>
             </div>
-            {% endfor %}
-        </div>
+          </div>
+        {% endfor %}
+      </div>
     {% else %}
-        <div class="alert alert-info">У вас пока нет объявлений</div>
-        <a href="{% url 'create' %}" class="btn btn-primary">Создать первое объявление</a>
+      <div class="alert alert-info">У вас пока нет объявлений</div>
+      <a href="{% url 'create' %}" class="btn btn-primary">Создать первое объявление</a>
     {% endif %}
-</div>
+    
+    <h2 class="mt-5 mb-4">Мои предложения</h2>
+    <div class="mb-3">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" href="#received" data-bs-toggle="tab">Полученные</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#sent" data-bs-toggle="tab">Отправленные</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#completed" data-bs-toggle="tab">Завершенные</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="received">
+        {% if received_proposals %}
+          <div class="list-group">
+            {% for proposal in received_proposals %}
+              {% if proposal.status != 'completed' %}
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <a href="{% url 'detail' proposal.ad_receiver.id %}">
+                        {% if proposal.ad_sender.image_url %}
+                          <img src="{{ proposal.ad_sender.image_url }}" alt="{{ proposal.ad_sender.title }}" class="img-thumbnail" width="80">
+                        {% endif %}
+                      </a>
+                    </div>
+                    <div>
+                      <h5>
+                        Предложение на 
+                        <a href="{% url 'detail' proposal.ad_receiver.id %}">
+                          "{{ proposal.ad_receiver.title }}"
+                        </a>
+                      </h5>
+                      <p class="mb-1">От: {{ proposal.ad_sender.user.username }}</p>
+                      <p class="mb-1">Предлагает: {{ proposal.ad_sender.title }}</p>
+                      {% if proposal.comment %}
+                        <p class="text-muted">Комментарий: {{ proposal.comment }}</p>
+                      {% endif %}
+                    </div>
+                    <div>
+                      <span class="badge bg-{% if proposal.status == 'pending' %}warning{% elif proposal.status == 'accepted' %}success{% else %}danger{% endif %}">
+                        {{ proposal.get_status_display }}
+                      </span>
+                      <div class="mt-2">
+                        {% if proposal.status == 'pending' %}
+                          <a href="{% url 'accept_exchange' proposal.id %}" class="btn btn-sm btn-success">Принять</a>
+                          <a href="{% url 'reject_exchange' proposal.id %}" class="btn btn-sm btn-danger">Отклонить</a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="alert alert-info">У вас нет полученных предложений</div>
+        {% endif %}
+      </div>
+      <div class="tab-pane fade" id="sent">
+        {% if sent_proposals %}
+          <div class="list-group">
+            {% for proposal in sent_proposals %}
+              {% if proposal.status == 'pending' %}
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                      <a href="{% url 'detail' proposal.ad_receiver.id %}" class="me-3">
+                        {% if proposal.ad_sender.image_url %}
+                          <img src="{{ proposal.ad_sender.image_url }}" 
+                              alt="{{ proposal.ad_sender.title }}" 
+                              class="img-thumbnail" 
+                              style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                      </a>
+                      <div>
+                        <h5 class="mb-1">
+                          Предложение на 
+                          <a href="{% url 'detail' proposal.ad_receiver.id %}">
+                            "{{ proposal.ad_receiver.title }}"
+                          </a>
+                        </h5>
+                        <p class="mb-1">Ваше предложение: {{ proposal.ad_sender.title }}</p>
+                        {% if proposal.comment %}
+                          <p class="text-muted mb-0">Ваш комментарий: {{ proposal.comment }}</p>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <span class="badge bg-{% if proposal.status == 'pending' %}warning{% elif proposal.status == 'accepted' %}success{% else %}danger{% endif %}">
+                        {{ proposal.get_status_display }}
+                      </span>
+                      {% if proposal.status == 'pending' %}
+                        <div class="mt-2">
+                          <a href="{% url 'cancel_exchange' proposal.id %}" class="btn btn-sm btn-outline-danger">Отозвать</a>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="alert alert-info">Вы не отправляли предложений</div>
+        {% endif %}
+      </div>
+
+      <div class="tab-pane fade" id="completed">
+        {% if completed_proposals %}
+          <div class="list-group">
+            {% for proposal in completed_proposals %}
+              <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5>Обмен #{{ proposal.id }}</h5>
+                    <p class="mb-1">Вы получили: {{ proposal.ad_receiver.title }}</p>
+                    <p class="mb-1">Вы отдали: {{ proposal.ad_sender.title }}</p>
+                    <p class="text-muted small">Дата: {{ proposal.created_at|date:"d.m.Y H:i" }}</p>
+                  </div>
+                  <div>
+                    <span class="badge bg-success">Завершено</span>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="alert alert-info">У вас нет завершенных обменов</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 {% endblock %}
