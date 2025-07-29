@@ -1,26 +1,42 @@
 {% extends "base.html" %}
-{% block title %}
-  О проекте
-{% endblock %}
+{% block title %}О проекте | Обмен вещей{% endblock %}
+
 {% block content %}
-  <div class="col d-flex justify-content-center">
-    <div class="card" style="width: 40rem;">
-      <div class="card-header">
-        О проекте
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-header">
+      <h4>О проекте</h4>
+    </div>
+    <div class="card-body">
+      <h5>Минималистичная площадка для обмена вещами</h5>
+      <p>
+        Проект разработан на Django как тестовое задание. 
+        Позволяет пользователям обмениваться вещами без денег.
+      </p>
+
+      <h6>Основные возможности:</h6>
+      <ul>
+        <li>Размещение объявлений</li>
+        <li>Просмотр чужих предложений</li>
+        <li>Отправка запросов на обмен</li>
+      </ul>
+
+      <h6>Технологии:</h6>
+      <div>
+        <span>Django 5.2</span> | 
+        <span>Python 3.12+</span> | 
+        <span>SQLite</span>
       </div>
-      <div class="card-body">
-        <p>
-          Проект выполнен в качестве тестового задания.<br>
-          Основная задача: разработать веб-приложение (на Django) для организации
-          обмена вещами между пользователями.<br>
-          Пользователи смогут:
-        </p>
-        <ul>
-          <li>Размещать объявления о товарах для обмена</li>
-          <li>Просматривать чужие объявления</li>
-          <li>Отправлять предложения на обмен</li>
-        </ul>
-      </div>
+
+      {% if user.is_authenticated %}
+        <a href="/ads/create/" class="btn btn-success mt-3">Создать объявление</a>
+      {% else %}
+        <a href="/signup/" class="btn btn-primary mt-3">Присоединиться</a>
+      {% endif %}
+    </div>
+    <div class="card-footer">
+      <small>Версия 1.0 | 2024</small>
     </div>
   </div>
+</div>
 {% endblock %}
