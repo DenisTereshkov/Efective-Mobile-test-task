@@ -1,7 +1,7 @@
 # Обменник товаров (Django)
 
 **Минималистичная площадка для обмена вещами**  
-[![Python 3.12+](https://img.shields.io/badge/python-3.8+-blue)](https://www.python.org/)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue)](https://www.python.org/)
 [![Django 5.2](https://img.shields.io/badge/django-5.2-green)](https://www.djangoproject.com/)
 
  ## 📌 Описание проекта
