@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from .constants import (
@@ -11,7 +10,7 @@ from .constants import (
 User = get_user_model()
 
 
-class Ad(models.Model): 
+class Ad(models.Model):
     user = models.ForeignKey(
         User,
         related_name='ads',

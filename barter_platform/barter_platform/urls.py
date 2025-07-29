@@ -1,11 +1,17 @@
 from django.contrib import admin
-from django.urls import include, path, reverse_lazy
-from django.contrib.auth.forms import UserCreationForm
-from django.views.generic.edit import CreateView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import include, path, reverse_lazy
+from django.views.generic import RedirectView
+from django.views.generic.edit import CreateView
+
+handler403 = 'pages.views.csrf_failure'
+handler404 = 'pages.views.page_not_found'
+handler500 = 'pages.views.server_error'
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='ads/')),
     path('admin/', admin.site.urls),
     path('ads/', include('ads.urls')),
     path('pages/', include('pages.urls')),
@@ -21,5 +27,11 @@ urlpatterns = [
     )
 ]
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.STATIC_URL,
+        document_root=settings.STATIC_ROOT
+        )
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

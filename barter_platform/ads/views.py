@@ -4,13 +4,10 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 
-from .constants import (
-    CATEGORY_CHOICES,
-    CONDITION_CHOICES,
-    STATUS_CHOICES
-)
+from .constants import CATEGORY_CHOICES, CONDITION_CHOICES
 from .models import Ad, ExchangeProposal
 from .forms import AdForm
+
 
 @login_required
 def create_ad(request):
@@ -26,8 +23,8 @@ def create_ad(request):
             messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
     else:
         form = AdForm()
-    
     return render(request, 'ads/ad_create_edit.html', {'form': form})
+
 
 @login_required
 def edit_ad(request, pk):
@@ -43,7 +40,9 @@ def edit_ad(request, pk):
 
 
 def ads_list(request):
-    ads = Ad.objects.exclude(received_proposals__status='accepted').order_by('-created_at')
+    ads = Ad.objects.exclude(
+        received_proposals__status='accepted'
+    ).order_by('-created_at')
     search_query = request.GET.get('search', '')
     if search_query:
         ads = ads.filter(
@@ -76,13 +75,14 @@ def ads_list(request):
 def create_exchange(request, pk):
     receiver_ad = get_object_or_404(Ad, id=pk)
     if request.user == receiver_ad.user:
-        messages.error(request, "Вы не можете предлагать обмен на своё же объявление!")
+        messages.error(
+            request,
+            "Вы не можете предлагать обмен на своё же объявление!"
+        )
         return redirect('detail', pk=pk)
-    
     if request.method == 'POST':
         sender_ad_id = request.POST.get('sender_ad_id')
         comment = request.POST.get('comment', '')
-        
         try:
             sender_ad = Ad.objects.get(id=sender_ad_id, user=request.user)
             ExchangeProposal.objects.create(
@@ -96,8 +96,6 @@ def create_exchange(request, pk):
         except Exception as e:
             messages.error(request, f'Ошибка: {e}')
             return redirect('create_exchange', pk=pk)
-    
-    # GET-запрос: показываем форму
     user_ads = Ad.objects.filter(user=request.user).exclude(id=pk)
     return render(request, 'ads/create_exchange.html', {
         'receiver_ad': receiver_ad,
@@ -105,10 +103,10 @@ def create_exchange(request, pk):
     })
 
 
-
 def ad_detail(request, pk):
     ad = get_object_or_404(Ad, pk=pk)
     return render(request, 'ads/ad_detail.html', {'ad': ad})
+
 
 @login_required
 def delete_ad(request, pk):
@@ -129,11 +127,12 @@ def user_profile(request):
     received_proposals = ExchangeProposal.objects.filter(
         ad_receiver__user=request.user
     ).filter(status='pending').select_related('ad_sender', 'ad_sender__user')
-    
     sent_proposals = ExchangeProposal.objects.filter(
         ad_sender__user=request.user
-    ).filter(status='pending').select_related('ad_receiver', 'ad_receiver__user')
-    
+    ).filter(status='pending').select_related(
+        'ad_receiver',
+        'ad_receiver__user'
+    )
     completed_proposals = ExchangeProposal.objects.filter(
         Q(ad_sender__user=request.user) | Q(ad_receiver__user=request.user),
         Q(status='rejected') | Q(status='accepted')
@@ -144,8 +143,8 @@ def user_profile(request):
         'sent_proposals': sent_proposals,
         'completed_proposals': completed_proposals,
     }
-    
     return render(request, 'ads/profile.html', context)
+
 
 @login_required
 def incoming_exchanges(request):
@@ -153,6 +152,7 @@ def incoming_exchanges(request):
         ad_receiver__user=request.user
     )
     return render(request, 'ads/exchange_to_me.html', {'proposals': proposals})
+
 
 @login_required
 def accept_exchange(request, exchange_id):
@@ -168,6 +168,7 @@ def reject_exchange(request, exchange_id):
     proposal.status = 'rejected'
     proposal.save()
     return redirect('exchange_to_me')
+
 
 @login_required
 def cancel_exchange(request, exchange_id):
